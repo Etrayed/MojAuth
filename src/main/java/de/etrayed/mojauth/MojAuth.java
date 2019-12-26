@@ -1,11 +1,13 @@
 package de.etrayed.mojauth;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import de.etrayed.mojauth.response.AuthenticationResponse;
 import de.etrayed.mojauth.response.EmptyIfSuccessfulResponse;
 import de.etrayed.mojauth.response.RefreshResponse;
 import de.etrayed.mojauth.util.AuthAgent;
+import de.etrayed.mojauth.util.MAGsonFactory;
 import kong.unirest.Config;
 import kong.unirest.HttpResponse;
 import kong.unirest.UnirestInstance;
@@ -18,12 +20,24 @@ import java.util.function.BiFunction;
  */
 public class MojAuth {
 
+    public static final Gson GSON = MAGsonFactory.newInstance();
+
     private static final String AUTH_SERVER_URL = "https://authserver.mojang.com/";
 
     private static UnirestInstance unirestInstance;
 
     static {
         unirestInstance = new UnirestInstance(new Config());
+    }
+
+    public static AuthenticationResponse authenticate(String username, String password,
+                                                      boolean requestUser) {
+        return authenticate(username, password, null, requestUser);
+    }
+
+    public static AuthenticationResponse authenticate(String username, String password,
+                                                      String clientToken, boolean requestUser) {
+        return authenticate(null, username, password, clientToken, requestUser);
     }
 
     public static AuthenticationResponse authenticate(AuthAgent agent, String username, String password,
@@ -35,10 +49,13 @@ public class MojAuth {
                                                       String clientToken, boolean requestUser) {
         JsonObject object = new JsonObject();
 
-        object.add("agent", agent.jsonify());
         object.addProperty("username", username);
         object.addProperty("password", password);
         object.addProperty("requestUser", requestUser);
+
+        if(agent != null) {
+            object.add("agent", agent.jsonify());
+        }
 
         if(clientToken != null) {
             object.addProperty("clientToken", clientToken);
