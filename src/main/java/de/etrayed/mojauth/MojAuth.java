@@ -1,6 +1,7 @@
 package de.etrayed.mojauth;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import de.etrayed.mojauth.response.AuthenticationResponse;
@@ -123,7 +124,7 @@ public class MojAuth {
     }
 
     private static HttpResponse<String> makeRequest(String endpoint, String body) {
-        return unirestInstance.post(AUTH_SERVER_URL + body).charset(StandardCharsets.UTF_8)
+        return unirestInstance.post(AUTH_SERVER_URL + endpoint).charset(StandardCharsets.UTF_8)
                 .body(body).header("Content-Type", "application/json").asString();
     }
 
@@ -131,8 +132,13 @@ public class MojAuth {
         R resultResponse;
 
         if(response.isSuccess()) {
-            resultResponse = function.apply(JsonParser.parseString(response.getBody()).getAsJsonObject(),
-                    response.getStatus());
+            JsonElement parsedElement = JsonParser.parseString(response.getBody());
+
+            if(parsedElement.isJsonNull()) {
+                parsedElement = new JsonObject();
+            }
+
+            resultResponse = function.apply(parsedElement.getAsJsonObject(), response.getStatus());
         } else if(response.getParsingError().isPresent()) {
             JsonObject errorObject = new JsonObject();
 

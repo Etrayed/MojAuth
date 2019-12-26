@@ -31,8 +31,8 @@ public class RefreshResult {
         return clientToken;
     }
 
-    public Profile selectedProfile() {
-        return selectedProfile;
+    public Optional<Profile> selectedProfile() {
+        return Optional.of(selectedProfile);
     }
 
     public Optional<UserInfo> userInfo() {

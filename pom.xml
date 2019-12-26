@@ -6,7 +6,7 @@
 
     <groupId>de.etrayed</groupId>
     <artifactId>mojauth</artifactId>
-    <version>ALPHA</version>
+    <version>1.0</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

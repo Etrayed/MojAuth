@@ -23,7 +23,8 @@ public class AuthenticationResponse extends AbstractResponse<AuthenticationResul
     AuthenticationResult constructResult(JsonObject object, int statusCode) {
         String accessToken = object.get("accessToken").getAsString();
         String clientToken = object.has("clientToken") ? object.get("clientToken").getAsString() : null;
-        Profile selectedProfile = MojAuth.GSON.fromJson(object.get("selectedProfile").getAsJsonObject(), Profile.class);
+        Profile selectedProfile = object.has("selectedProfile")
+                ? MojAuth.GSON.fromJson(object.get("selectedProfile").getAsJsonObject(), Profile.class) : null;
         UserInfo userInfo = object.has("user") ? MojAuth.GSON.fromJson(object.get("user").getAsJsonObject(),
                 UserInfo.class) : null;
         List<Profile> availableProfiles = object.has("availableProfiles") ? new CopyOnWriteArrayList<>()

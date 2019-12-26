@@ -83,6 +83,8 @@ public class MAGsonFactory {
             String username = null;
             Map<String, String> properties = new ConcurrentHashMap<>();
 
+            jsonReader.beginObject();
+
             while (jsonReader.hasNext()) {
                 if(jsonReader.peek() == JsonToken.END_OBJECT) {
                     jsonReader.endObject();
