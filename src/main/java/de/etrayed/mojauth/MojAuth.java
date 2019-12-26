@@ -8,7 +8,7 @@ import de.etrayed.mojauth.response.AuthenticationResponse;
 import de.etrayed.mojauth.response.EmptyIfSuccessfulResponse;
 import de.etrayed.mojauth.response.RefreshResponse;
 import de.etrayed.mojauth.util.AuthAgent;
-import de.etrayed.mojauth.util.MAGsonFactory;
+import de.etrayed.mojauth.util.MojAuthGsonFactory;
 import kong.unirest.Config;
 import kong.unirest.HttpResponse;
 import kong.unirest.UnirestInstance;
@@ -19,16 +19,17 @@ import java.util.function.BiFunction;
 /**
  * @author Etrayed
  */
+@SuppressWarnings("WeakerAccess")
 public class MojAuth {
 
-    public static final Gson GSON = MAGsonFactory.newInstance();
+    public static final Gson GSON = MojAuthGsonFactory.newInstance();
 
     private static final String AUTH_SERVER_URL = "https://authserver.mojang.com/";
 
-    private static UnirestInstance unirestInstance;
+    private static final UnirestInstance UNIREST_INSTANCE;
 
     static {
-        unirestInstance = new UnirestInstance(new Config());
+        UNIREST_INSTANCE = new UnirestInstance(new Config());
     }
 
     public static AuthenticationResponse authenticate(String username, String password,
@@ -54,11 +55,16 @@ public class MojAuth {
         object.addProperty("password", password);
         object.addProperty("requestUser", requestUser);
 
-        if(agent != null) {
-            object.add("agent", agent.jsonify());
+        if (agent != null) {
+            JsonObject agentObject = new JsonObject();
+
+            agentObject.addProperty("name", agent.game().fixedName());
+            agentObject.addProperty("version", agent.version());
+
+            object.add("agent", agentObject);
         }
 
-        if(clientToken != null) {
+        if (clientToken != null) {
             object.addProperty("clientToken", clientToken);
         }
 
@@ -75,7 +81,7 @@ public class MojAuth {
         object.addProperty("accessToken", accessToken);
         object.addProperty("requestUser", requestUser);
 
-        if(clientToken != null) {
+        if (clientToken != null) {
             object.addProperty("clientToken", clientToken);
         }
 
@@ -91,7 +97,7 @@ public class MojAuth {
 
         object.addProperty("accessToken", accessToken);
 
-        if(clientToken != null) {
+        if (clientToken != null) {
             object.addProperty("clientToken", clientToken);
         }
 
@@ -116,7 +122,7 @@ public class MojAuth {
 
         object.addProperty("accessToken", accessToken);
 
-        if(clientToken != null) {
+        if (clientToken != null) {
             object.addProperty("clientToken", clientToken);
         }
 
@@ -124,22 +130,22 @@ public class MojAuth {
     }
 
     private static HttpResponse<String> makeRequest(String endpoint, String body) {
-        return unirestInstance.post(AUTH_SERVER_URL + endpoint).charset(StandardCharsets.UTF_8)
+        return UNIREST_INSTANCE.post(AUTH_SERVER_URL + endpoint).charset(StandardCharsets.UTF_8)
                 .body(body).header("Content-Type", "application/json").asString();
     }
 
     private static <R> R checkForErrors(HttpResponse<String> response, BiFunction<JsonObject, Integer, R> function) {
         R resultResponse;
 
-        if(response.isSuccess()) {
+        if (response.isSuccess()) {
             JsonElement parsedElement = JsonParser.parseString(response.getBody());
 
-            if(parsedElement.isJsonNull()) {
+            if (parsedElement.isJsonNull()) {
                 parsedElement = new JsonObject();
             }
 
             resultResponse = function.apply(parsedElement.getAsJsonObject(), response.getStatus());
-        } else if(response.getParsingError().isPresent()) {
+        } else if (response.getParsingError().isPresent()) {
             JsonObject errorObject = new JsonObject();
 
             errorObject.addProperty("error", ".");
@@ -155,10 +161,6 @@ public class MojAuth {
     }
 
     public static Config unirestConfig() {
-        return unirestInstance.config();
-    }
-
-    public static void shutdown() {
-        unirestInstance.shutDown(false);
+        return UNIREST_INSTANCE.config();
     }
 }

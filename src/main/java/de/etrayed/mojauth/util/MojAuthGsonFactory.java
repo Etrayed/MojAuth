@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author Etrayed
  */
-public class MAGsonFactory {
+public class MojAuthGsonFactory {
 
     private static final ProfileTypeAdapter PROFILE_TYPE_ADAPTER;
 
@@ -45,7 +45,7 @@ public class MAGsonFactory {
             jsonReader.beginObject();
 
             while (jsonReader.hasNext()) {
-                if(jsonReader.peek() == JsonToken.END_OBJECT) {
+                if (jsonReader.peek() == JsonToken.END_OBJECT) {
                     jsonReader.endObject();
 
                     break;
@@ -53,15 +53,15 @@ public class MAGsonFactory {
 
                 String entryName = jsonReader.nextName();
 
-                if(jsonReader.peek() == JsonToken.NULL) {
+                if (jsonReader.peek() == JsonToken.NULL) {
                     jsonReader.skipValue();
 
                     continue;
                 }
 
-                if(entryName.equals("id")) {
+                if (entryName.equals("id")) {
                     id = hexStringToUUID(jsonReader.nextString());
-                } else if(entryName.equals("name")) {
+                } else if (entryName.equals("name")) {
                     name = jsonReader.nextString();
                 } else {
                     jsonReader.skipValue();
@@ -86,7 +86,7 @@ public class MAGsonFactory {
             jsonReader.beginObject();
 
             while (jsonReader.hasNext()) {
-                if(jsonReader.peek() == JsonToken.END_OBJECT) {
+                if (jsonReader.peek() == JsonToken.END_OBJECT) {
                     jsonReader.endObject();
 
                     break;
@@ -94,7 +94,7 @@ public class MAGsonFactory {
 
                 String entryName = jsonReader.nextName();
 
-                if(jsonReader.peek() == JsonToken.NULL) {
+                if (jsonReader.peek() == JsonToken.NULL) {
                     jsonReader.skipValue();
 
                     continue;

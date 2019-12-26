@@ -16,7 +16,7 @@ public class RefreshResponse extends AbstractResponse<RefreshResult> {
     }
 
     @Override
-    RefreshResult constructResult(JsonObject object, int statusCode) {
+    RefreshResult constructResult(JsonObject object) {
         String accessToken = object.get("accessToken").getAsString();
         String clientToken = object.has("clientToken") ? object.get("clientToken").getAsString() : null;
         Profile selectedProfile = object.has("selectedProfile")

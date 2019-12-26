@@ -12,7 +12,7 @@ public class EmptyIfSuccessfulResponse extends AbstractResponse<Void> {
     }
 
     @Override
-    Void constructResult(JsonObject object, int statusCode) {
+    Void constructResult(JsonObject object) {
         return null;
     }
 }

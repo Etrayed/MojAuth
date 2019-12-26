@@ -20,7 +20,7 @@ public class AuthenticationResponse extends AbstractResponse<AuthenticationResul
     }
 
     @Override
-    AuthenticationResult constructResult(JsonObject object, int statusCode) {
+    AuthenticationResult constructResult(JsonObject object) {
         String accessToken = object.get("accessToken").getAsString();
         String clientToken = object.has("clientToken") ? object.get("clientToken").getAsString() : null;
         Profile selectedProfile = object.has("selectedProfile")
@@ -30,7 +30,7 @@ public class AuthenticationResponse extends AbstractResponse<AuthenticationResul
         List<Profile> availableProfiles = object.has("availableProfiles") ? new CopyOnWriteArrayList<>()
                 : null;
 
-        if(availableProfiles != null) {
+        if (availableProfiles != null) {
             for (JsonElement availableProfile : object.get("availableProfiles").getAsJsonArray()) {
                 availableProfiles.add(MojAuth.GSON.fromJson(availableProfile.getAsJsonObject(), Profile.class));
             }

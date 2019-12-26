@@ -1,7 +1,5 @@
 package de.etrayed.mojauth.util;
 
-import com.google.gson.JsonObject;
-
 /**
  * @author Etrayed
  */
@@ -16,13 +14,12 @@ public class AuthAgent {
         this.version = version;
     }
 
-    public JsonObject jsonify() {
-        JsonObject object = new JsonObject();
+    public Game game() {
+        return game;
+    }
 
-        object.addProperty("name", game.name);
-        object.addProperty("version", version);
-
-        return object;
+    public int version() {
+        return version;
     }
 
     public enum Game {
@@ -34,6 +31,10 @@ public class AuthAgent {
 
         Game(String name) {
             this.name = name;
+        }
+
+        public String fixedName() {
+            return name;
         }
     }
 }

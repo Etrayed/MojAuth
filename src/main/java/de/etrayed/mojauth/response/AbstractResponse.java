@@ -14,12 +14,13 @@ abstract class AbstractResponse<R> implements Response<R> {
 
     private final R result;
 
+    @SuppressWarnings("WeakerAccess")
     public AbstractResponse(JsonObject object, int statusCode) {
         this.plainBody = object.toString();
 
         Throwable error = null;
 
-        if(object.has("error")) {
+        if (object.has("error")) {
             String message = object.get("errorMessage").getAsString();
 
             switch (object.get("error").getAsString()) {
@@ -55,10 +56,10 @@ abstract class AbstractResponse<R> implements Response<R> {
         }
 
         this.error = error;
-        this.result = error == null ? constructResult(object, statusCode) : null;
+        this.result = error == null ? constructResult(object) : null;
     }
 
-    abstract R constructResult(JsonObject object, int statusCode);
+    abstract R constructResult(JsonObject object);
 
     @Override
     public final String plainBody() {
