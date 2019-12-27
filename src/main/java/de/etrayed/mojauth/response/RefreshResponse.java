@@ -19,8 +19,8 @@ public class RefreshResponse extends AbstractResponse<RefreshResult> {
     RefreshResult constructResult(JsonObject object) {
         String accessToken = object.get("accessToken").getAsString();
         String clientToken = getOrDefault(object.get("clientToken"), JsonElement::getAsString);
-        Profile selectedProfile = convertToJsonOrDefault(object.get("selectedProfile"), Profile.class);
-        UserInfo userInfo = convertToJsonOrDefault(object.get("user"), UserInfo.class);
+        Profile selectedProfile = convertFromJsonOrDefault(object.get("selectedProfile"), Profile.class);
+        UserInfo userInfo = convertFromJsonOrDefault(object.get("user"), UserInfo.class);
 
         return new RefreshResult(accessToken, clientToken, selectedProfile, userInfo);
     }

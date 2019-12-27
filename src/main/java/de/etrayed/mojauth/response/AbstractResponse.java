@@ -43,7 +43,7 @@ abstract class AbstractResponse<R> implements Response<R> {
         return converter.apply(element);
     }
 
-    <T> T convertToJsonOrDefault(JsonElement element, Class<T> outClass) {
+    <T> T convertFromJsonOrDefault(JsonElement element, Class<T> outClass) {
         if(element == null || element.isJsonNull()) {
             return null;
         }
