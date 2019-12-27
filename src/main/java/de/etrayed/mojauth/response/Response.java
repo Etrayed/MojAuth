@@ -1,5 +1,7 @@
 package de.etrayed.mojauth.response;
 
+import de.etrayed.mojauth.util.MojAuthException;
+
 import java.util.Optional;
 
 /**
@@ -7,7 +9,7 @@ import java.util.Optional;
  */
 public interface Response<T> {
 
-    Optional<Throwable> error();
+    Optional<MojAuthException> error();
 
     String plainBody();
 

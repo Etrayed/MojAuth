@@ -15,7 +15,7 @@ abstract class AbstractResponse<R> implements Response<R> {
 
     private final String plainBody;
 
-    private final Throwable error;
+    private final MojAuthException exception;
 
     private final R result;
 
@@ -25,10 +25,10 @@ abstract class AbstractResponse<R> implements Response<R> {
         MojAuthException.Type type = MojAuthException.parseType(object.get("error"));
 
         if(type == null) {
-            this.error = null;
+            this.exception = null;
             this.result = constructResult(object);
         } else {
-            this.error = new MojAuthException(type, object.get("errorMessage").getAsString(), statusCode);
+            this.exception = new MojAuthException(type, object.get("errorMessage").getAsString(), statusCode);
             this.result = null;
         }
     }
@@ -57,8 +57,8 @@ abstract class AbstractResponse<R> implements Response<R> {
     }
 
     @Override
-    public final Optional<Throwable> error() {
-        return Optional.of(error);
+    public final Optional<MojAuthException> error() {
+        return Optional.of(exception);
     }
 
     @Override
