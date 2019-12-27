@@ -22,18 +22,18 @@ public class AuthenticationResponse extends AbstractResponse<AuthenticationResul
     @Override
     AuthenticationResult constructResult(JsonObject object) {
         String accessToken = object.get("accessToken").getAsString();
-        String clientToken = object.has("clientToken") ? object.get("clientToken").getAsString() : null;
-        Profile selectedProfile = object.has("selectedProfile")
-                ? MojAuth.GSON.fromJson(object.get("selectedProfile").getAsJsonObject(), Profile.class) : null;
-        UserInfo userInfo = object.has("user") ? MojAuth.GSON.fromJson(object.get("user").getAsJsonObject(),
-                UserInfo.class) : null;
-        List<Profile> availableProfiles = object.has("availableProfiles") ? new CopyOnWriteArrayList<>()
-                : null;
+        String clientToken = getOrDefault(object.get("clientToken"), JsonElement::getAsString);
+        Profile selectedProfile = convertToJsonOrDefault(object.get("selectedProfile"), Profile.class);
+        UserInfo userInfo = convertToJsonOrDefault(object.get("user"), UserInfo.class);
+        List<Profile> availableProfiles;
 
-        if (availableProfiles != null) {
-            for (JsonElement availableProfile : object.get("availableProfiles").getAsJsonArray()) {
-                availableProfiles.add(MojAuth.GSON.fromJson(availableProfile.getAsJsonObject(), Profile.class));
-            }
+        if (object.has("availableProfiles")) {
+            availableProfiles = new CopyOnWriteArrayList<>();
+
+            object.getAsJsonArray("availableProfiles").forEach(profile -> availableProfiles.add(MojAuth
+                    .GSON.fromJson(profile.getAsJsonObject(), Profile.class)));
+        } else {
+            availableProfiles = null;
         }
 
         return new AuthenticationResult(accessToken, clientToken, selectedProfile, userInfo, availableProfiles);

@@ -1,7 +1,7 @@
 package de.etrayed.mojauth.response;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import de.etrayed.mojauth.MojAuth;
 import de.etrayed.mojauth.result.RefreshResult;
 import de.etrayed.mojauth.util.Profile;
 import de.etrayed.mojauth.util.UserInfo;
@@ -18,11 +18,9 @@ public class RefreshResponse extends AbstractResponse<RefreshResult> {
     @Override
     RefreshResult constructResult(JsonObject object) {
         String accessToken = object.get("accessToken").getAsString();
-        String clientToken = object.has("clientToken") ? object.get("clientToken").getAsString() : null;
-        Profile selectedProfile = object.has("selectedProfile")
-                ? MojAuth.GSON.fromJson(object.get("selectedProfile").getAsJsonObject(), Profile.class) : null;
-        UserInfo userInfo = object.has("user") ? MojAuth.GSON.fromJson(object.get("user").getAsJsonObject(),
-                UserInfo.class) : null;
+        String clientToken = getOrDefault(object.get("clientToken"), JsonElement::getAsString);
+        Profile selectedProfile = convertToJsonOrDefault(object.get("selectedProfile"), Profile.class);
+        UserInfo userInfo = convertToJsonOrDefault(object.get("user"), UserInfo.class);
 
         return new RefreshResult(accessToken, clientToken, selectedProfile, userInfo);
     }

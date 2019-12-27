@@ -12,7 +12,6 @@ public class UserInfo extends Profile {
 
     private final Map<String, String> properties;
 
-    @SuppressWarnings("WeakerAccess")
     public UserInfo(UUID id, String name, Map<String, String> properties) {
         super(id, name);
 

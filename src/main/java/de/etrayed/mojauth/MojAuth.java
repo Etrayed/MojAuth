@@ -19,7 +19,6 @@ import java.util.function.BiFunction;
 /**
  * @author Etrayed
  */
-@SuppressWarnings("WeakerAccess")
 public class MojAuth {
 
     public static final Gson GSON = MojAuthGsonFactory.newInstance();

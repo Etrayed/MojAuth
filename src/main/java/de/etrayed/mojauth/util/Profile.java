@@ -11,7 +11,6 @@ public class Profile {
 
     private final String name;
 
-    @SuppressWarnings("WeakerAccess")
     public Profile(UUID id, String name) {
         this.id = id;
         this.name = name;

@@ -1,7 +1,12 @@
 package de.etrayed.mojauth.response;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import de.etrayed.mojauth.exception.*;
+import de.etrayed.mojauth.MojAuth;
+import de.etrayed.mojauth.util.MojAuthException;
+
+import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * @author Etrayed
@@ -14,52 +19,37 @@ abstract class AbstractResponse<R> implements Response<R> {
 
     private final R result;
 
-    @SuppressWarnings("WeakerAccess")
     public AbstractResponse(JsonObject object, int statusCode) {
         this.plainBody = object.toString();
 
-        Throwable error = null;
+        MojAuthException.Type type = MojAuthException.parseType(object.get("error"));
 
-        if (object.has("error")) {
-            String message = object.get("errorMessage").getAsString();
-
-            switch (object.get("error").getAsString()) {
-                case "Method Not Allowed":
-                    error = new MethodNotAllowedException(message, statusCode);
-
-                    break;
-                case "Not Found":
-                    error = new EndpointNotFoundException(message, statusCode);
-
-                    break;
-                case "ForbiddenOperationException":
-                    error = object.has("cause")
-                            ? new ForbiddenOperationException(new UserMigratedException(message, statusCode), statusCode)
-                            : new ForbiddenOperationException(message, statusCode);
-
-                    break;
-                case "IllegalArgumentException":
-                    error = new IllegalArgumentException(message);
-
-                    break;
-                case "Unsupported Media Type":
-                    error = new UnsupportedMediaTypeException(message
-                            + " (set \"Content-Type\" header to \"application/json\")", statusCode);
-
-                    break;
-
-                default:
-                    error = new MojangAuthException(message, statusCode);
-
-                    break;
-            }
+        if(type == null) {
+            this.error = null;
+            this.result = constructResult(object);
+        } else {
+            this.error = new MojAuthException(type, object.get("errorMessage").getAsString(), statusCode);
+            this.result = null;
         }
-
-        this.error = error;
-        this.result = error == null ? constructResult(object) : null;
     }
 
     abstract R constructResult(JsonObject object);
+
+    <T> T getOrDefault(JsonElement element, Function<JsonElement, T> converter) {
+        if(element == null || element.isJsonNull()) {
+            return null;
+        }
+
+        return converter.apply(element);
+    }
+
+    <T> T convertToJsonOrDefault(JsonElement element, Class<T> outClass) {
+        if(element == null || element.isJsonNull()) {
+            return null;
+        }
+
+        return MojAuth.GSON.fromJson(element, outClass);
+    }
 
     @Override
     public final String plainBody() {
@@ -67,12 +57,12 @@ abstract class AbstractResponse<R> implements Response<R> {
     }
 
     @Override
-    public final Throwable error() {
-        return error;
+    public final Optional<Throwable> error() {
+        return Optional.of(error);
     }
 
     @Override
-    public final R result() {
-        return result;
+    public final Optional<R> result() {
+        return Optional.of(result);
     }
 }

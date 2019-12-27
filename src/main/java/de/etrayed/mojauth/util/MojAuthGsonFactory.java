@@ -45,17 +45,9 @@ public class MojAuthGsonFactory {
             jsonReader.beginObject();
 
             while (jsonReader.hasNext()) {
-                if (jsonReader.peek() == JsonToken.END_OBJECT) {
-                    jsonReader.endObject();
+                String entryName = nextNameOrEnd(jsonReader);
 
-                    break;
-                }
-
-                String entryName = jsonReader.nextName();
-
-                if (jsonReader.peek() == JsonToken.NULL) {
-                    jsonReader.skipValue();
-
+                if(entryName == null) {
                     continue;
                 }
 
@@ -86,17 +78,9 @@ public class MojAuthGsonFactory {
             jsonReader.beginObject();
 
             while (jsonReader.hasNext()) {
-                if (jsonReader.peek() == JsonToken.END_OBJECT) {
-                    jsonReader.endObject();
+                String entryName = nextNameOrEnd(jsonReader);
 
-                    break;
-                }
-
-                String entryName = jsonReader.nextName();
-
-                if (jsonReader.peek() == JsonToken.NULL) {
-                    jsonReader.skipValue();
-
+                if(entryName == null) {
                     continue;
                 }
 
@@ -144,8 +128,26 @@ public class MojAuthGsonFactory {
         }
     }
 
+    private static String nextNameOrEnd(JsonReader reader) throws IOException {
+        if(reader.peek() == JsonToken.END_OBJECT) {
+            reader.endObject();
+
+            return null;
+        }
+
+        String entryName = reader.nextName();
+
+        if(reader.peek() == JsonToken.NULL) {
+            reader.skipValue();
+
+            return null;
+        }
+
+        return entryName;
+    }
+
     private static UUID hexStringToUUID(String str) {
-        return UUID.fromString(str.substring(0, 8) + "-" + str.substring(8, 12) + "-" + str.substring(12, 16) + "-"
-                + str.substring(16, 20) + "-" + str.substring(20, 32));
+        return UUID.fromString(str.replaceAll("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})",
+                "$1-$2-$3-$4-$5"));
     }
 }

@@ -1,13 +1,15 @@
 package de.etrayed.mojauth.response;
 
+import java.util.Optional;
+
 /**
  * @author Etrayed
  */
 public interface Response<T> {
 
-    Throwable error();
+    Optional<Throwable> error();
 
     String plainBody();
 
-    T result();
+    Optional<T> result();
 }
